@@ -1,0 +1,39 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: hkandchill
+  name: hkandchill
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hkandchill
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: hkandchill
+    spec:
+      containers:
+      - image: andimiller/hkandchill:latest
+        imagePullPolicy: Always
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: 80
+            scheme: HTTP
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        name: hkandchill
+        ports:
+        - containerPort: 80
+          protocol: TCP
